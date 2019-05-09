@@ -1,0 +1,1 @@
+# diehard-hash-test
