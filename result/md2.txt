@@ -86,3 +86,16 @@ rgb_minimum_distance|   5|     10000|    1000|0.83139085|  PASSED
       rgb_lagged_sum|   4|   1000000|     100|0.90702635|  PASSED  
       rgb_lagged_sum|   5|   1000000|     100|0.62123582|  PASSED  
       rgb_lagged_sum|   6|   1000000|     100|0.77010372|  PASSED  
+      rgb_lagged_sum|   7|   1000000|     100|0.90716737|  PASSED  
+      rgb_lagged_sum|   8|   1000000|     100|0.81003236|  PASSED  
+      rgb_lagged_sum|   9|   1000000|     100|0.43232641|  PASSED  
+      rgb_lagged_sum|  10|   1000000|     100|0.73310842|  PASSED  
+      rgb_lagged_sum|  11|   1000000|     100|0.01041799|  PASSED  
+      rgb_lagged_sum|  12|   1000000|     100|0.98356804|  PASSED  
+      rgb_lagged_sum|  13|   1000000|     100|0.17340656|  PASSED  
+      rgb_lagged_sum|  14|   1000000|     100|0.67137260|  PASSED  
+      rgb_lagged_sum|  15|   1000000|     100|0.80355157|  PASSED  
+      rgb_lagged_sum|  16|   1000000|     100|0.72386771|  PASSED  
+      rgb_lagged_sum|  17|   1000000|     100|0.87117876|  PASSED  
+      rgb_lagged_sum|  18|   1000000|     100|0.62465839|  PASSED  
+      rgb_lagged_sum|  19|   1000000|     100|0.82444843|  PASSED  
