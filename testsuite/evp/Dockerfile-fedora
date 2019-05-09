@@ -1,0 +1,10 @@
+FROM fedora:29
+
+RUN dnf -y install dieharder gcc openssl-devel
+
+WORKDIR /app
+COPY ./ ./
+
+ARG evp=$evp
+RUN gcc -Wall -O3 -D_EVP=EVP_$evp -o gen gen.c -lssl -lcrypto
+CMD ./gen | dieharder -a -g200
