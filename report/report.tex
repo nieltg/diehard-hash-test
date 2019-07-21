@@ -1,16 +1,56 @@
 \documentclass[conference]{IEEEtran}
 \IEEEoverridecommandlockouts
 
+% Marks
+\usepackage[utf8]{inputenc}
+
+% \DeclareUnicodeCharacter{274C}{\crossmark}
+% \DeclareRobustCommand\crossmark{%
+%   \unskip\nobreak\thinspace\textemdash\allowbreak\thinspace\ignorespaces}
+% \DeclareUnicodeCharacter{2713}{\checkmark}
+
 % Language (id, en)
 \usepackage[english,bahasa]{babel}
 \def\IEEEkeywordsname{Kata Kunci}
 \def\IEEEproofname{Bukti}
+\addto\extrasbahasa{
+    \let\figureautorefname\undefined
+    \let\tableautorefname\undefined
+    \let\partautorefname\undefined
+    \let\appendixautorefname\undefined
+    \let\equationautorefname\undefined
+    \let\Itemautorefname\undefined
+    \let\chapterautorefname\undefined
+    \let\sectionautorefname\undefined
+    \let\subsectionautorefname\undefined
+    \let\subsubsectionautorefname\undefined
+    \let\paragraphautorefname\undefined
+    \let\Hfootnoteautorefname\undefined
+    \let\AMSautorefname\undefined
+    \let\theoremautorefname\undefined
+}
 \newcommand{\en}[1]
     {\foreignlanguage{english}{\textit{#1}}}
 
 % References
-\usepackage{hyperref}
+\usepackage[pdfborderstyle={/S/U/W 1}]{hyperref}
 \usepackage{xurl}
+
+% Listings
+\usepackage{listings}
+\lstset{
+    frame=single,
+    language=C,
+    extendedchars=true,
+    basicstyle=\linespread{1.2}\footnotesize\ttfamily,
+}
+
+\makeatletter
+\def\lst@makecaption{%
+  \def\@captype{table}%
+  \@makecaption
+}
+\makeatother
 
 % The preceding line is only needed to identify funding in the first footnote. If that is unneeded, please comment it out.
 \usepackage{cite}
@@ -35,13 +75,19 @@
 \maketitle
 
 \begin{abstract}
-    This document is a model and instructions for \LaTeX.
-    This and the IEEEtran.cls file define the components of your paper [title, text, heads, etc.]. *CRITICAL: Do Not Use Symbols, Special Characters, Footnotes,
-    or Math in Paper Title or Abstract.
+    Algoritma \en{hash} merupakan algoritma yang umum ditemukan.
+    Algoritma ini berfungsi untuk melakukan verifikasi dokumen yang besar dengan mudah.
+    Selain itu, algoritma ini juga dapat digunakan untuk melakukan \en{information hiding}.
+    Sebagai contoh, \en{password} disimpan dalam basis data dalam bentuk nilai \en{hash}.
+    Hal ini mengurangi dampak yang terjadi jika basis data tersebut diretas.
+    Nilai \en{hash} yang baik harus dapat menyembunyikan pola dari nilai yang dimasukkan.
+    Jika tidak, maka peretas dapat melakukan analisis terhadap nilai \en{hash} tersebut.
+    Oleh karena itu, pengujian perlu dilakukan terhadap algoritma \en{hash} mengenai kemampuan algoritma tersebut dalam menyembunyikan pola.
+    Pengujian ini dilakukan dengan \nameref{sec:teori:diehard} yang sudah umum digunakan untuk menilai keacakan suatu rangkaian bilangan.
 \end{abstract}
 
 \begin{IEEEkeywords}
-    component, formatting, style, styling, insert
+    DieHard, nilai acak, fungsi \en{hash}, md5, sha-1, sha-256, sha3-224, sha3-512
 \end{IEEEkeywords}
 
 \section{Pendahuluan}
@@ -49,14 +95,23 @@
 Algoritma \en{hash}, atau \en{message digest} merupakan algoritma yang umum digunakan.
 Algoritma ini memiliki manfaat yang besar karena algoritma ini dapat menghasilkan nilai representasi dari suatu konten dokumen yang besar.
 Sebagai akibatnya, algoritma ini sering digunakan sebagai penanda, apakah suatu konten dokumen merupakan konten dokumen yang sudah diubah atau belum diubah.
+Selain itu, algoritma ini juga digunakan untuk menyembunyikan data rahasia, seperti PIN, \en{password}, dan lain-lain.
+Penggunaan algoritma \en{hash} memungkinkan \en{password} atau PIN tersebut untuk tidak disimpan dalam bentuk plainteks, namun hanya dalam bentuk \en{hash}.
+Hal ini memungkinkan pihak pengelola situs untuk memastikan bahwa \en{password} yang diberikan merupakan \en{password} yang benar walaupun pengelola situs sendiri tidak menyimpan \en{password} tersebut.
+Jika terjadi peretasan terhadap basis data \en{password}, maka nilai \en{hash} dari \en{password} tersebut menjadi kurang berguna bagi \en{peretas}.
+Hal ini dikarenakan peretas harus mencari nilai \en{reverse} terhadap berbagai nilai \en{hash} tersebut yang sulit untuk dilakukan.
 
 Sebagai algoritma \en{hash} berbasis kriptografi, maka algoritma ini harus memiliki sifat \en{confusion}.
-Sifat ini berarti hasil yang dihasilkan oleh algoritma ini tidak dapat ditebak, walaupun sebenarnya data yang di-\en{hash} merupakan data yang memiliki pola yang jelas.
+Algoritma ini juga harus dapat menyembunyikan pola umum yang terdapat pada plainteks sebelum di-\en{hash}.
+Hal ini penting karena jika algoritma \en{hash} tidak mampu untuk menyembunyikan pola pada plainteks, maka peretas dapat melakukan analisis terhadap nilai \en{hash}.
+Pada makalah ini, penulis akan melakukan pengujian terhadap berbagai algoritma \en{hash}.
+Pengujian dilakukan dengan menggunakan \nameref{sec:teori:diehard} yang digunakan untuk mengetahui seberapa acak nilai yang dihasilkan.
+Melalui teknik ini, diharapkan bahwa algoritma-algoritma \en{hash} tersebut dapat dibuktikan keacakannya.
 
 \section{Dasar Teori}
 \label{sec:teori}
 
-\subsection{Pengujian DieHard}
+\subsection{Rangkaian Pengujian DieHard}
 \label{sec:teori:diehard}
 
 \nameref{sec:teori:diehard} merupakan suatu rangkaian pengujian yang umumnya dilakukan untuk memastikan tingkat keacakan dari suatu algoritma \en{Random Number Generator (RNG)} \cite{alani2010testing}.
@@ -67,8 +122,15 @@ Berikut ini merupakan daftar dari subpengujian yang dilakukan pada \nameref{sec:
 \subsubsection{Jarak Ulang Tahun}
 \label{sec:teori:diehard:birthday}
 
+\begin{figure}[htbp]
+    \includegraphics[width=\linewidth]{img/teori-diehard-birthday-graph.png}
+    \caption{Illustrasi dari Paradoks Ulang Tahun}
+    \label{fig:teori:diehard:birthday:graph}
+\end{figure}
+
 Pengujian ini dilakukan dengan cara mengambil $m$ hari ulang tahun dalam satu tahun dengan jumlah hari sebanyak $n$.
 Hari ulang tahun ini diambil berdasarkan berbagai bilangan acak yang dihasilkan oleh algoritma pembangkit bilangan acak yang sedang diuji.
+Pengujian ini didasari oleh paradoks ulang tahun, seperti pada \autoref{fig:teori:diehard:birthday:graph}.
 
 Jika jarak dari berbagai hari ulang tahun terdistribusi secara exponensial asimtotik, maka pembangkit bilangan acak tersebut lolos uji.
 
@@ -108,9 +170,15 @@ Pada pengujian DNA, huruf terdiri dari C, G, A, T, yang ditentukan dari dua bit 
 \subsubsection{Jumlah Satu pada Aliran Bit}
 \label{sec:teori:diehard:count1stream}
 
+\begin{figure}[htbp]
+    \includegraphics[width=\linewidth]{img/teori-diehard-count1stream-chi.png}
+    \caption{Illustrasi dari Diagram Chi-Square}
+    \label{fig:teori:diehard:count1stream:chi}
+\end{figure}
+
 Pengujian ini dilakukan dengan cara mengambil $n$ bit dari bilangan acak 32-bit.
 Ada terdapat 8 kemungkinan dari jumlah 1 pada bit-bit tersebut, berdasarkan Segitiga Paskal, yaitu 1, 8, 28, 56, 70, 56, 28, 8, 1.
-Perhitungan dilakukan terhadap jumlah kata, lalu dianalisa dengan menggunakan pengujian Chi-square.
+Perhitungan dilakukan terhadap jumlah kata, lalu dianalisa dengan menggunakan pengujian Chi-square, seperti pada \autoref{fig:teori:diehard:count1stream:chi}.
 
 \subsubsection{Jumlah Satu pada Bit Spesifik}
 
@@ -165,222 +233,364 @@ Pengujian ini dilakukan dengan memainkan permainan \en{Craps} sambil melakukan p
 
 Jika berbagai jumlah tersebut mengikuti distribusi tertenu, maka pembangkit bilangan acak tersebut lolos uji.
 
-\subsection{Algoritma \en{Hash} MD}
+\subsection{Fungsi \en{Hash}}
+
+\begin{figure}[htbp]
+    \includegraphics[width=\linewidth]{img/teori-hash-graph.png}
+    \caption{Illustrasi dari Fungsi \en{Hash}}
+    \label{fig:teori:hash}
+\end{figure}
+
+Fungsi \en{hash} merupakan fungsi satu arah yang berguna untuk menghasilkan representasi terhadap masukan yang diberikan. \cite{coron2005merkle}
+Fungsi \en{hash} ini dapat digunakan untuk melakukan komputasi terhadap representasi suatu masukan, namun nilai tersebut tidak dapat dikembalikan kembali jika hanya diketahui nilai \en{hash} dari nilai tersebut, seperti pada \autoref{fig:teori:hash}.
+Salah satu sifat yang menarik dari nilai \en{hash} adalah jika nilai yang dimasukkan berbeda sedikit, maka nilai \en{hash} yang dihasilkan berbeda jauh dari sebelumnya.
+
+Fungsi \en{hash} banyak digunakan untuk berbagai kebutuhan, salah satu kebutuhan tersebut adalah verifikasi dokumen.
+Dokumen yang ingin diverifikasi dihitung nilai \en{hash}-nya, lalu dilakukan komparasi terhadap nilai \en{hash} dari dokumen asli.
+Jika dokumen tersebut memiliki nilai \en{hash} yang sama, maka dapat dipastikan bahwa kedua dokumen tersebut memiliki isi yang sama.
+
+\subsection{Algoritma SHA-1}
+
+\begin{figure}[htbp]
+    \includegraphics[width=\linewidth]{img/teori-sha1-graph.png}
+    \caption{Illustrasi dari Fungsi \en{Hash} SHA-1}
+    \label{fig:teori:sha1}
+\end{figure}
+
+Algoritma SHA-1 merupakan salah satu contoh dari fungsi \en{hash}.
+Algoritma ini bekerja dengan cara membagi masukan menjadi blok-blok berukuran 512 bits.
+Selanjutnya, algoritma ini memiliki lima nilai inisialisasi awal.
+Setelah dibagi-bagi, maka untuk setiap blok, nilai tersebut akan dibagi kembali menjadi seperti pada \autoref{fig:teori:sha1}.
+Masing-masing dari blok tersebut akan dilakukan perhitungan dan hasil dari perhitungan tersebut akan berkontribusi terhadap kelima nilai inisialisasi awal tersebut.
+Algoritma ini menghasilkan nilai yang berbeda jika masukan yang diberikan juga berbeda.
 
 \section{Metode Analisis}
+\label{sec:analisis}
 
-Pengujian ini dilakukan terhadap
+Analisis dilakukan dengan cara mengimplementasikan suatu pembangkit bilangan \en{counter}, lalu dilakukan \nameref{sec:teori:diehard} terhadap rangkaian bilangan yang dihasilkan oleh pembangkit tersebut.
+Pembangkit bilangan \en{counter} merupakan pembangkit bilangan tak acak, atau deterministik, dengan \en{source code} yang tertera pada \autoref{lst:analisis:counter}.
+Hal ini disebabkan karena algoritma dari pembangkit itu sendiri, yaitu hanya menambah satu dari bilangan sebelumnya.
+Bilangan selanjutnya yang dihasilkan oleh pembangkit bilangan \en{counter} dapat diprediksi jika diketahui bilangan sebelumnya, lalu menambahkannya dengan satu.
+\nameref{sec:teori:diehard} dilakukan untuk menguji \nameref{sec:teori:diehard} itu sendiri, bahwa \nameref{sec:teori:diehard} mampu untuk mengetahui pembangkit bilangan acak yang buruk atau yang tidak buruk.
+
+\begin{lstlisting}[
+    caption=Pembangkit Bilangan \en{Counter},
+    label=lst:analisis:counter,
+]
+#include <stdio.h>
+#include <stdint.h>
+
+int main(void) {
+    for (uint64_t i = 0;; ++i) {
+        fwrite(&i, sizeof(i), 1, stdout);
+    }
+}
+\end{lstlisting}
+
+Setelah itu, pengujian dilanjutkan terhadap hasil dari pembangkit bilangan \en{counter} yang telah di-\en{hash} dengan berbagai macam algoritma \en{hash}, seperti pada \autoref{lst:analisis:counter-hash}.
+Pengujian dilakukan dengan metode yang sama, yaitu dengan \nameref{sec:teori:diehard}.
+Hal ini dilakukan untuk membuktikan apakah suatu algoritma \en{hash} tersebut dapat menutupi pola yang dihasilkan oleh pembangkit bilangan yang deterministik.
+
+\begin{lstlisting}[
+    caption=Pembangkit Bilangan \en{Counter} dengan \en{Hash},
+    label=lst:analisis:counter-hash,
+]
+#include <stdio.h>
+#include <stdint.h>
+#include <openssl/evp.h>
+
+int main(void) {
+    EVP_MD_CTX *ctx;
+    unsigned char* digest;
+    unsigned int len;
+
+    const EVP_MD* md = _EVP();
+
+    if ((ctx = EVP_MD_CTX_create()) == NULL)
+        return EXIT_FAILURE;
+    digest =
+        (uint8_t*) OPENSSL_malloc(EVP_MD_size(md));
+    if (digest == NULL)
+        return EXIT_FAILURE;
+
+    int result;
+    for (uint64_t i = 0;; ++i) {
+        if (1 != EVP_DigestInit_ex(ctx, md, NULL))
+            return EXIT_FAILURE;
+        result =
+            EVP_DigestUpdate(ctx, &i, sizeof(i));
+        if (1 != result) return EXIT_FAILURE;
+        result =
+            EVP_DigestFinal_ex(ctx, digest, &len);
+        if (1 != result) return EXIT_FAILURE;
+        result = fwrite(digest, len, 1, stdout);
+        if (1 != result) break;
+    }
+
+    return EXIT_SUCCESS;
+}
+\end{lstlisting}
+
+\nameref{sec:teori:diehard} dilakukan dengan menggunakan kakas pengujian, yaitu \texttt{dieharder}.
+Kakas ini sudah tersedia pada sistem operasi Linux pada umumnya, seperti pada Ubuntu, Fedora, dan lain-lain.
+Kakas ini menghasilkan informasi berupa nilai \en{p-value} dari setiap pengujian yang dilakukan.
+Nilai \en{p-value} baik jika nilai tersebut tidak mendekati nol ataupun satu.
 
 \section{Pengujian dan Hasil}
 
+Adapun hasil \nameref{sec:teori:diehard} terhadap pembangkit bilangan \en{counter} terdapat pada \autoref{tab:analisis:res-counter}.
+Hasil ini menunjukkan bahwa pembangkit bilangan \en{counter} menghasilkan bilangan yang sangat deterministik.
+
+\begin{table}[htbp]
+    \caption{Hasil \nameref{sec:teori:diehard} pada Pembangkit \en{Counter}}
+    \label{tab:analisis:res-counter}
+    \begin{center}
+        \begin{tabular}{|c|c|c|c|c|c|}
+            \hline
+            \textbf{name}  & \textbf{$n$} & \textbf{$t$} & \textbf{$p$} & \textbf{\en{p-value}} & \textbf{score} \\
+            \hline
+            birthdays      & 0            & 100          & 100          & 0.00000000            & F              \\
+            operm5         & 0            & 1000000      & 100          & 0.00000000            & F              \\
+            rank\_32x32    & 0            & 40000        & 100          & 0.00000000            & F              \\
+            rank\_6x8      & 0            & 100000       & 100          & 0.00000000            & F              \\
+            bitstream      & 0            & 2097152      & 100          & 0.00000000            & F              \\
+            opso           & 0            & 2097152      & 100          & 0.00000000            & F              \\
+            oqso           & 0            & 2097152      & 100          & 0.00000000            & F              \\
+            dna            & 0            & 2097152      & 100          & 0.00000000            & F              \\
+            count\_1s\_str & 0            & 256000       & 100          & 0.00000000            & F              \\
+            count\_1s\_byt & 0            & 256000       & 100          & 0.00000000            & F              \\
+            parking\_lot   & 0            & 12000        & 100          & 0.00000000            & F              \\
+            2dsphere       & 2            & 8000         & 100          & 0.00000000            & F              \\
+            3dsphere       & 3            & 4000         & 100          & 0.00000000            & F              \\
+            squeeze        & 0            & 100000       & 100          & 0.00000000            & F              \\
+            sums           & 0            & 100          & 100          & 0.00000000            & F              \\
+            runs           & 0            & 100000       & 100          & 0.00000000            & F              \\
+            craps          & 0            & 200000       & 100          & 0.00000000            & F              \\
+            \hline
+        \end{tabular}
+    \end{center}
+\end{table}
+
+Adapun hasil \nameref{sec:teori:diehard} terhadap algoritma \en{hash} MD5 terdapat pada \autoref{tab:analisis:res-md5}.
+Pada tabel tersebut, terlihat bahwa algoritma \en{hash} MD5 berhasil menutupi nilai deteriministik yang diberikan kepadanya dan menghasilkan hasil yang tidak deterministik.
+
+\begin{table}[htbp]
+    \caption{Hasil \nameref{sec:teori:diehard} pada Algoritma \en{Hash} MD5}
+    \label{tab:analisis:res-md5}
+    \begin{center}
+        \begin{tabular}{|c|c|c|c|c|c|}
+            \hline
+            \textbf{name}  & \textbf{$n$} & \textbf{$t$} & \textbf{$p$} & \textbf{\en{p-value}} & \textbf{score} \\
+            \hline
+            birthdays      & 0            & 100          & 100          & 0.83493401            & P              \\
+            operm5         & 0            & 1000000      & 100          & 0.13808476            & P              \\
+            rank\_32x32    & 0            & 40000        & 100          & 0.49540961            & P              \\
+            rank\_6x8      & 0            & 100000       & 100          & 0.96090185            & P              \\
+            bitstream      & 0            & 2097152      & 100          & 0.51937065            & P              \\
+            opso           & 0            & 2097152      & 100          & 0.56823387            & P              \\
+            oqso           & 0            & 2097152      & 100          & 0.65456864            & P              \\
+            dna            & 0            & 2097152      & 100          & 0.09236801            & P              \\
+            count\_1s\_str & 0            & 256000       & 100          & 0.12818292            & P              \\
+            count\_1s\_byt & 0            & 256000       & 100          & 0.79540813            & P              \\
+            parking\_lot   & 0            & 12000        & 100          & 0.20530715            & P              \\
+            2dsphere       & 2            & 8000         & 100          & 0.95542895            & P              \\
+            3dsphere       & 3            & 4000         & 100          & 0.67579958            & P              \\
+            squeeze        & 0            & 100000       & 100          & 0.48340663            & P              \\
+            sums           & 0            & 100          & 100          & 0.10673786            & P              \\
+            runs           & 0            & 100000       & 100          & 0.84300594            & P              \\
+            runs           & 0            & 100000       & 100          & 0.66673207            & P              \\
+            craps          & 0            & 200000       & 100          & 0.96596889            & P              \\
+            craps          & 0            & 200000       & 100          & 0.68234665            & P              \\
+            \hline
+        \end{tabular}
+    \end{center}
+\end{table}
+
+Adapun hasil \nameref{sec:teori:diehard} terhadap algoritma \en{hash} SHA-1 terdapat pada \autoref{tab:analisis:res-sha1}.
+Pada tabel tersebut, terlihat bahwa algoritma \en{hash} SHA-1 berhasil menutupi nilai deteriministik yang diberikan kepadanya dan menghasilkan hasil yang tidak deterministik. Namun, algoritma ini memiliki kelemahan, yaitu \nameref{sec:teori:diehard} menyatakan bahwa nilai \en{p-value} dari pengujian \textbf{rank\_6x8} lemah.
+
+\begin{table}[htbp]
+    \caption{Hasil \nameref{sec:teori:diehard} pada Algoritma \en{Hash} SHA-1}
+    \label{tab:analisis:res-sha1}
+    \begin{center}
+        \begin{tabular}{|c|c|c|c|c|c|}
+            \hline
+            \textbf{name}  & \textbf{$n$} & \textbf{$t$} & \textbf{$p$} & \textbf{\en{p-value}} & \textbf{score} \\
+            \hline
+            birthdays      & 0            & 100          & 100          & 0.90308244            & P              \\
+            operm5         & 0            & 1000000      & 100          & 0.77533850            & P              \\
+            rank\_32x32    & 0            & 40000        & 100          & 0.99013873            & P              \\
+            rank\_6x8      & 0            & 100000       & 100          & 0.99931466            & W              \\
+            bitstream      & 0            & 2097152      & 100          & 0.26177806            & P              \\
+            opso           & 0            & 2097152      & 100          & 0.94065883            & P              \\
+            oqso           & 0            & 2097152      & 100          & 0.13229571            & P              \\
+            dna            & 0            & 2097152      & 100          & 0.10089652            & P              \\
+            count\_1s\_str & 0            & 256000       & 100          & 0.28211098            & P              \\
+            count\_1s\_byt & 0            & 256000       & 100          & 0.13779757            & P              \\
+            parking\_lot   & 0            & 12000        & 100          & 0.92463763            & P              \\
+            2dsphere       & 2            & 8000         & 100          & 0.56913822            & P              \\
+            3dsphere       & 3            & 4000         & 100          & 0.21190329            & P              \\
+            squeeze        & 0            & 100000       & 100          & 0.99487181            & P              \\
+            sums           & 0            & 100          & 100          & 0.01418347            & P              \\
+            runs           & 0            & 100000       & 100          & 0.83149758            & P              \\
+            runs           & 0            & 100000       & 100          & 0.17257367            & P              \\
+            craps          & 0            & 200000       & 100          & 0.22553601            & P              \\
+            craps          & 0            & 200000       & 100          & 0.46018380            & P              \\
+            \hline
+        \end{tabular}
+    \end{center}
+\end{table}
+
+Adapun hasil \nameref{sec:teori:diehard} terhadap algoritma \en{hash} SHA-256 terdapat pada \autoref{tab:analisis:res-sha256}.
+Pada tabel tersebut, terlihat bahwa algoritma \en{hash} SHA-256 berhasil menutupi nilai deteriministik yang diberikan kepadanya dan menghasilkan hasil yang tidak deterministik.
+
+\begin{table}[htbp]
+    \caption{Hasil \nameref{sec:teori:diehard} pada Algoritma \en{Hash} SHA-256}
+    \label{tab:analisis:res-sha256}
+    \begin{center}
+        \begin{tabular}{|c|c|c|c|c|c|}
+            \hline
+            \textbf{name}  & \textbf{$n$} & \textbf{$t$} & \textbf{$p$} & \textbf{\en{p-value}} & \textbf{score} \\
+            \hline
+            birthdays      & 0            & 100          & 100          & 0.11742983            & P              \\
+            operm5         & 0            & 1000000      & 100          & 0.86730359            & P              \\
+            rank\_32x32    & 0            & 40000        & 100          & 0.85362400            & P              \\
+            rank\_6x8      & 0            & 100000       & 100          & 0.65607618            & P              \\
+            bitstream      & 0            & 2097152      & 100          & 0.44602679            & P              \\
+            opso           & 0            & 2097152      & 100          & 0.80592270            & P              \\
+            oqso           & 0            & 2097152      & 100          & 0.50922885            & P              \\
+            dna            & 0            & 2097152      & 100          & 0.38486042            & P              \\
+            count\_1s\_str & 0            & 256000       & 100          & 0.55778969            & P              \\
+            count\_1s\_byt & 0            & 256000       & 100          & 0.09707888            & P              \\
+            parking\_lot   & 0            & 12000        & 100          & 0.69464262            & P              \\
+            2dsphere       & 2            & 8000         & 100          & 0.35225641            & P              \\
+            3dsphere       & 3            & 4000         & 100          & 0.07009520            & P              \\
+            squeeze        & 0            & 100000       & 100          & 0.49526322            & P              \\
+            sums           & 0            & 100          & 100          & 0.52833492            & P              \\
+            runs           & 0            & 100000       & 100          & 0.55287078            & P              \\
+            runs           & 0            & 100000       & 100          & 0.31233239            & P              \\
+            craps          & 0            & 200000       & 100          & 0.81740715            & P              \\
+            craps          & 0            & 200000       & 100          & 0.13152499            & P              \\
+            \hline
+        \end{tabular}
+    \end{center}
+\end{table}
+
+Adapun hasil \nameref{sec:teori:diehard} terhadap algoritma \en{hash} SHA-512 terdapat pada \autoref{tab:analisis:res-sha512}.
+Pada tabel tersebut, terlihat bahwa algoritma \en{hash} SHA-512 berhasil menutupi nilai deteriministik yang diberikan kepadanya dan menghasilkan hasil yang tidak deterministik.
+
+\begin{table}[htbp]
+    \caption{Hasil \nameref{sec:teori:diehard} pada Algoritma \en{Hash} SHA-512}
+    \label{tab:analisis:res-sha512}
+    \begin{center}
+        \begin{tabular}{|c|c|c|c|c|c|}
+            \hline
+            \textbf{name}  & \textbf{$n$} & \textbf{$t$} & \textbf{$p$} & \textbf{\en{p-value}} & \textbf{score} \\
+            \hline
+            birthdays      & 0            & 100          & 100          & 0.83533667            & PASSED         \\
+            operm5         & 0            & 1000000      & 100          & 0.09863312            & PASSED         \\
+            rank\_32x32    & 0            & 40000        & 100          & 0.59920193            & PASSED         \\
+            rank\_6x8      & 0            & 100000       & 100          & 0.84670622            & PASSED         \\
+            bitstream      & 0            & 2097152      & 100          & 0.41207689            & PASSED         \\
+            opso           & 0            & 2097152      & 100          & 0.20526907            & PASSED         \\
+            oqso           & 0            & 2097152      & 100          & 0.63415543            & PASSED         \\
+            dna            & 0            & 2097152      & 100          & 0.41552472            & PASSED         \\
+            count\_1s\_str & 0            & 256000       & 100          & 0.28571988            & PASSED         \\
+            count\_1s\_byt & 0            & 256000       & 100          & 0.39883190            & PASSED         \\
+            parking\_lot   & 0            & 12000        & 100          & 0.18682201            & PASSED         \\
+            2dsphere       & 2            & 8000         & 100          & 0.71181865            & PASSED         \\
+            3dsphere       & 3            & 4000         & 100          & 0.54820023            & PASSED         \\
+            squeeze        & 0            & 100000       & 100          & 0.22287221            & PASSED         \\
+            sums           & 0            & 100          & 100          & 0.11454171            & PASSED         \\
+            runs           & 0            & 100000       & 100          & 0.29782531            & PASSED         \\
+            runs           & 0            & 100000       & 100          & 0.67427707            & PASSED         \\
+            craps          & 0            & 200000       & 100          & 0.53878238            & PASSED         \\
+            craps          & 0            & 200000       & 100          & 0.05479793            & PASSED         \\
+            \hline
+        \end{tabular}
+    \end{center}
+\end{table}
+
+Adapun hasil \nameref{sec:teori:diehard} terhadap algoritma \en{hash} SHA-3 224-bit terdapat pada \autoref{tab:analisis:res-sha3-224}.
+Pada tabel tersebut, terlihat bahwa algoritma \en{hash} SHA-3 224-bit berhasil menutupi nilai deteriministik yang diberikan kepadanya dan menghasilkan hasil yang tidak deterministik.
+
+\begin{table}[htbp]
+    \caption{Hasil \nameref{sec:teori:diehard} pada Algoritma \en{Hash} SHA-3 224-bit}
+    \label{tab:analisis:res-sha3-224}
+    \begin{center}
+        \begin{tabular}{|c|c|c|c|c|c|}
+            \hline
+            \textbf{name}  & \textbf{$n$} & \textbf{$t$} & \textbf{$p$} & \textbf{\en{p-value}} & \textbf{score} \\
+            \hline
+            birthdays      & 0            & 100          & 100          & 0.27807841            & P              \\
+            operm5         & 0            & 1000000      & 100          & 0.69003439            & P              \\
+            rank\_32x32    & 0            & 40000        & 100          & 0.09806208            & P              \\
+            rank\_6x8      & 0            & 100000       & 100          & 0.79949728            & P              \\
+            bitstream      & 0            & 2097152      & 100          & 0.50073951            & P              \\
+            opso           & 0            & 2097152      & 100          & 0.65394724            & P              \\
+            oqso           & 0            & 2097152      & 100          & 0.99483965            & P              \\
+            dna            & 0            & 2097152      & 100          & 0.73798246            & P              \\
+            count\_1s\_str & 0            & 256000       & 100          & 0.24632876            & P              \\
+            count\_1s\_byt & 0            & 256000       & 100          & 0.32165034            & P              \\
+            parking\_lot   & 0            & 12000        & 100          & 0.37100770            & P              \\
+            2dsphere       & 2            & 8000         & 100          & 0.85662011            & P              \\
+            3dsphere       & 3            & 4000         & 100          & 0.41664466            & P              \\
+            squeeze        & 0            & 100000       & 100          & 0.86884389            & P              \\
+            sums           & 0            & 100          & 100          & 0.01668733            & P              \\
+            runs           & 0            & 100000       & 100          & 0.75615543            & P              \\
+            runs           & 0            & 100000       & 100          & 0.91420119            & P              \\
+            craps          & 0            & 200000       & 100          & 0.22490163            & P              \\
+            craps          & 0            & 200000       & 100          & 0.39888109            & P              \\
+            \hline
+        \end{tabular}
+    \end{center}
+\end{table}
+
+Adapun hasil \nameref{sec:teori:diehard} terhadap algoritma \en{hash} SHA-3 512-bit terdapat pada \autoref{tab:analisis:res-sha3-512}.
+Pada tabel tersebut, terlihat bahwa algoritma \en{hash} SHA-3 512-bit berhasil menutupi nilai deteriministik yang diberikan kepadanya dan menghasilkan hasil yang tidak deterministik. Namun, algoritma ini memiliki kelemahan, yaitu \nameref{sec:teori:diehard} menyatakan bahwa nilai \en{p-value} dari pengujian \textbf{bitstream} dan \textbf{sums} lemah.
+
+\begin{table}[htbp]
+    \caption{Hasil \nameref{sec:teori:diehard} pada Algoritma \en{Hash} SHA-3 512-bit}
+    \label{tab:analisis:res-sha3-512}
+    \begin{center}
+        \begin{tabular}{|c|c|c|c|c|c|}
+            \hline
+            \textbf{name}  & \textbf{$n$} & \textbf{$t$} & \textbf{$p$} & \textbf{\en{p-value}} & \textbf{score} \\
+            \hline
+            birthdays      & 0            & 100          & 100          & 0.78652322            & P              \\
+            operm5         & 0            & 1000000      & 100          & 0.39655149            & P              \\
+            rank\_32x32    & 0            & 40000        & 100          & 0.26815124            & P              \\
+            rank\_6x8      & 0            & 100000       & 100          & 0.37349891            & P              \\
+            bitstream      & 0            & 2097152      & 100          & 0.99626020            & W              \\
+            opso           & 0            & 2097152      & 100          & 0.78497667            & P              \\
+            oqso           & 0            & 2097152      & 100          & 0.94383683            & P              \\
+            dna            & 0            & 2097152      & 100          & 0.28817500            & P              \\
+            count\_1s\_str & 0            & 256000       & 100          & 0.98306737            & P              \\
+            count\_1s\_byt & 0            & 256000       & 100          & 0.65666122            & P              \\
+            parking\_lot   & 0            & 12000        & 100          & 0.58615511            & P              \\
+            2dsphere       & 2            & 8000         & 100          & 0.39285914            & P              \\
+            3dsphere       & 3            & 4000         & 100          & 0.54598528            & P              \\
+            squeeze        & 0            & 100000       & 100          & 0.23179402            & P              \\
+            sums           & 0            & 100          & 100          & 0.00218225            & W              \\
+            runs           & 0            & 100000       & 100          & 0.37486171            & P              \\
+            runs           & 0            & 100000       & 100          & 0.36175524            & P              \\
+            craps          & 0            & 200000       & 100          & 0.27652066            & P              \\
+            craps          & 0            & 200000       & 100          & 0.78386810            & P              \\
+            \hline
+        \end{tabular}
+    \end{center}
+\end{table}
+
 \section{Kesimpulan dan Saran}
+
+Algoritma \en{hash} merupakan algoritma yang dapat menutupi sifat deterministik dari nilai yang dimasukkan pada algoritma tersebut.
+Namun, terdapat beberapa algoritma yang menghasilkan nilai \en{hash} yang gagal dalam \nameref{sec:teori:diehard}.
+Hal ini menunjukkan bahwa terdapat pola tertentu yang tidak acak, yang diketahui oleh pengujian ini.
 
 \section{Kata Penutup}
 
-
-
-
-% \section{Ease of Use}
-
-% \subsection{Maintaining the Integrity of the Specifications}
-
-% The IEEEtran class file is used to format your paper and style the text. All margins,
-% column widths, line spaces, and text fonts are prescribed; please do not
-% alter them. You may note peculiarities. For example, the head margin
-% measures proportionately more than is customary. This measurement
-% and others are deliberate, using specifications that anticipate your paper
-% as one part of the entire proceedings, and not as an independent document.
-% Please do not revise any of the current designations.
-
-% \section{Prepare Your Paper Before Styling}
-% Before you begin to format your paper, first write and save the content as a
-% separate text file. Complete all content and organizational editing before
-% formatting. Please note sections \ref{AA}--\ref{SCM} below for more information on
-% proofreading, spelling and grammar.
-
-% Keep your text and graphic files separate until after the text has been
-% formatted and styled. Do not number text heads---{\LaTeX} will do that
-% for you.
-
-% \subsection{Abbreviations and Acronyms}\label{AA}
-% Define abbreviations and acronyms the first time they are used in the text,
-% even after they have been defined in the abstract. Abbreviations such as
-% IEEE, SI, MKS, CGS, ac, dc, and rms do not have to be defined. Do not use
-% abbreviations in the title or heads unless they are unavoidable.
-
-% \subsection{Units}
-% \begin{itemize}
-%     \item Use either SI (MKS) or CGS as primary units. (SI units are encouraged.) English units may be used as secondary units (in parentheses). An exception would be the use of English units as identifiers in trade, such as ``3.5-inch disk drive''.
-%     \item Avoid combining SI and CGS units, such as current in amperes and magnetic field in oersteds. This often leads to confusion because equations do not balance dimensionally. If you must use mixed units, clearly state the units for each quantity that you use in an equation.
-%     \item Do not mix complete spellings and abbreviations of units: ``Wb/m\textsuperscript{2}'' or ``webers per square meter'', not ``webers/m\textsuperscript{2}''. Spell out units when they appear in text: ``. . . a few henries'', not ``. . . a few H''.
-%     \item Use a zero before decimal points: ``0.25'', not ``.25''. Use ``cm\textsuperscript{3}'', not ``cc''.)
-% \end{itemize}
-
-% \subsection{Equations}
-% Number equations consecutively. To make your
-% equations more compact, you may use the solidus (~/~), the exp function, or
-% appropriate exponents. Italicize Roman symbols for quantities and variables,
-% but not Greek symbols. Use a long dash rather than a hyphen for a minus
-% sign. Punctuate equations with commas or periods when they are part of a
-% sentence, as in:
-% \begin{equation}
-%     a+b=\gamma\label{eq}
-% \end{equation}
-
-% Be sure that the
-% symbols in your equation have been defined before or immediately following
-% the equation. Use ``\eqref{eq}'', not ``Eq.~\eqref{eq}'' or ``equation \eqref{eq}'', except at
-% the beginning of a sentence: ``Equation \eqref{eq} is . . .''
-
-% \subsection{\LaTeX-Specific Advice}
-
-% Please use ``soft'' (e.g., \verb|\eqref{Eq}|) cross references instead
-% of ``hard'' references (e.g., \verb|(1)|). That will make it possible
-% to combine sections, add equations, or change the order of figures or
-% citations without having to go through the file line by line.
-
-% Please don't use the \verb|{eqnarray}| equation environment. Use
-% \verb|{align}| or \verb|{IEEEeqnarray}| instead. The \verb|{eqnarray}|
-% environment leaves unsightly spaces around relation symbols.
-
-% Please note that the \verb|{subequations}| environment in {\LaTeX}
-% will increment the main equation counter even when there are no
-% equation numbers displayed. If you forget that, you might write an
-% article in which the equation numbers skip from (17) to (20), causing
-% the copy editors to wonder if you've discovered a new method of
-% counting.
-
-%     {\BibTeX} does not work by magic. It doesn't get the bibliographic
-% data from thin air but from .bib files. If you use {\BibTeX} to produce a
-% bibliography you must send the .bib files.
-
-%     {\LaTeX} can't read your mind. If you assign the same label to a
-% subsubsection and a table, you might find that Table I has been cross
-% referenced as Table IV-B3.
-
-% {\LaTeX} does not have precognitive abilities. If you put a
-% \verb|\label| command before the command that updates the counter it's
-% supposed to be using, the label will pick up the last counter to be
-% cross referenced instead. In particular, a \verb|\label| command
-% should not go before the caption of a figure or a table.
-
-% Do not use \verb|\nonumber| inside the \verb|{array}| environment. It
-% will not stop equation numbers inside \verb|{array}| (there won't be
-% any anyway) and it might stop a wanted equation number in the
-% surrounding equation.
-
-% \subsection{Some Common Mistakes}\label{SCM}
-% \begin{itemize}
-%     \item The word ``data'' is plural, not singular.
-%     \item The subscript for the permeability of vacuum $\mu_{0}$, and other common scientific constants, is zero with subscript formatting, not a lowercase letter ``o''.
-%     \item In American English, commas, semicolons, periods, question and exclamation marks are located within quotation marks only when a complete thought or name is cited, such as a title or full quotation. When quotation marks are used, instead of a bold or italic typeface, to highlight a word or phrase, punctuation should appear outside of the quotation marks. A parenthetical phrase or statement at the end of a sentence is punctuated outside of the closing parenthesis (like this). (A parenthetical sentence is punctuated within the parentheses.)
-%     \item A graph within a graph is an ``inset'', not an ``insert''. The word alternatively is preferred to the word ``alternately'' (unless you really mean something that alternates).
-%     \item Do not use the word ``essentially'' to mean ``approximately'' or ``effectively''.
-%     \item In your paper title, if the words ``that uses'' can accurately replace the word ``using'', capitalize the ``u''; if not, keep using lower-cased.
-%     \item Be aware of the different meanings of the homophones ``affect'' and ``effect'', ``complement'' and ``compliment'', ``discreet'' and ``discrete'', ``principal'' and ``principle''.
-%     \item Do not confuse ``imply'' and ``infer''.
-%     \item The prefix ``non'' is not a word; it should be joined to the word it modifies, usually without a hyphen.
-%     \item There is no period after the ``et'' in the Latin abbreviation ``et al.''.
-%     \item The abbreviation ``i.e.'' means ``that is'', and the abbreviation ``e.g.'' means ``for example''.
-% \end{itemize}
-% % An excellent style manual for science writers is \cite{b7}.
-
-% \subsection{Authors and Affiliations}
-% \textbf{The class file is designed for, but not limited to, six authors.} A
-% minimum of one author is required for all conference articles. Author names
-% should be listed starting from left to right and then moving down to the
-% next line. This is the author sequence that will be used in future citations
-% and by indexing services. Names should not be listed in columns nor group by
-% affiliation. Please keep your affiliations as succinct as possible (for
-% example, do not differentiate among departments of the same organization).
-
-% \subsection{Identify the Headings}
-% Headings, or heads, are organizational devices that guide the reader through
-% your paper. There are two types: component heads and text heads.
-
-% Component heads identify the different components of your paper and are not
-% topically subordinate to each other. Examples include Acknowledgments and
-% References and, for these, the correct style to use is ``Heading 5''. Use
-% ``figure caption'' for your Figure captions, and ``table head'' for your
-% table title. Run-in heads, such as ``Abstract'', will require you to apply a
-% style (in this case, italic) in addition to the style provided by the drop
-% down menu to differentiate the head from the text.
-
-% Text heads organize the topics on a relational, hierarchical basis. For
-% example, the paper title is the primary text head because all subsequent
-% material relates and elaborates on this one topic. If there are two or more
-% sub-topics, the next level head (uppercase Roman numerals) should be used
-% and, conversely, if there are not at least two sub-topics, then no subheads
-% should be introduced.
-
-% \subsection{Figures and Tables}
-% \paragraph{Positioning Figures and Tables} Place figures and tables at the top and
-% bottom of columns. Avoid placing them in the middle of columns. Large
-% figures and tables may span across both columns. Figure captions should be
-% below the figures; table heads should appear above the tables. Insert
-% figures and tables after they are cited in the text. Use the abbreviation
-% ``Fig.~\ref{fig}'', even at the beginning of a sentence.
-
-% \begin{table}[htbp]
-%     \caption{Table Type Styles}
-%     \begin{center}
-%         \begin{tabular}{|c|c|c|c|}
-%             \hline
-%             \textbf{Table} & \multicolumn{3}{|c|}{\textbf{Table Column Head}}                                                         \\
-%             \cline{2-4}
-%             \textbf{Head}  & \textbf{\textit{Table column subhead}}           & \textbf{\textit{Subhead}} & \textbf{\textit{Subhead}} \\
-%             \hline
-%             copy           & More table copy$^{\mathrm{a}}$                   &                           &                           \\
-%             \hline
-%             \multicolumn{4}{l}{$^{\mathrm{a}}$Sample of a Table footnote.}
-%         \end{tabular}
-%         \label{tab1}
-%     \end{center}
-% \end{table}
-
-% \begin{figure}[htbp]
-%     % \centerline{\includegraphics{fig1.png}}
-%     \caption{Example of a figure caption.}
-%     \label{fig}
-% \end{figure}
-
-% Figure Labels: Use 8 point Times New Roman for Figure labels. Use words
-% rather than symbols or abbreviations when writing Figure axis labels to
-% avoid confusing the reader. As an example, write the quantity
-% ``Magnetization'', or ``Magnetization, M'', not just ``M''. If including
-% units in the label, present them within parentheses. Do not label axes only
-% with units. In the example, write ``Magnetization (A/m)'' or ``Magnetization
-% \{A[m(1)]\}'', not just ``A/m''. Do not label axes with a ratio of
-% quantities and units. For example, write ``Temperature (K)'', not
-% ``Temperature/K''.
-
-% \section*{Acknowledgment}
-
-% The preferred spelling of the word ``acknowledgment'' in America is without
-% an ``e'' after the ``g''. Avoid the stilted expression ``one of us (R. B.
-% G.) thanks $\ldots$''. Instead, try ``R. B. G. thanks$\ldots$''. Put sponsor
-% acknowledgments in the unnumbered footnote on the first page.
-
-% \section*{References}
-
-% Please number citations consecutively within brackets \cite{b1}. The
-% sentence punctuation follows the bracket \cite{b2}. Refer simply to the reference
-% number, as in \cite{b3}---do not use ``Ref. \cite{b3}'' or ``reference \cite{b3}'' except at
-% the beginning of a sentence: ``Reference \cite{b3} was the first $\ldots$''
-
-% Number footnotes separately in superscripts. Place the actual footnote at
-% the bottom of the column in which it was cited. Do not put footnotes in the
-% abstract or reference list. Use letters for table footnotes.
-
-% Unless there are six authors or more give all authors' names; do not use
-% ``et al.''. Papers that have not been published, even if they have been
-% submitted for publication, should be cited as ``unpublished'' \cite{b4}. Papers
-% that have been accepted for publication should be cited as ``in press'' \cite{b5}.
-% Capitalize only the first word in a paper title, except for proper nouns and
-% element symbols.
-
-% For papers published in translation journals, please give the English
-% citation first, followed by the original foreign-language citation \cite{b6}.
+Saya mengucapkan terima kasih kepada dosen saya, Bapak Dr. Ir. Rinaldi Munir, M. T. yang telah mengampu mata kuliah IF4020 Kriptografi selama satu semester ini.
+Melalui jasa beliau berupa ilmu yang dicurahkan, maka makalah ini dapat diselesaikan dengan baik.
 
 \bibliography{references}
 \bibliographystyle{IEEEtran}
